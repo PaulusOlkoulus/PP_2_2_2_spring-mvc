@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import web.models.User;
 import web.service.UserService;
 import web.service.UserServiceImpl;
+
+import javax.validation.Valid;
 
 
 @Controller
@@ -26,9 +29,13 @@ public class UserController {
         if (id != null) {
             model.addAttribute("users", userService.getUserDetail(id));
             model.addAttribute("check", false);
+            model.addAttribute("isDetail", true);
+            model.addAttribute("usersCount", 1);
         } else {
+            model.addAttribute("usersCount", userService.getUsers().size());
             model.addAttribute("check", true);
             model.addAttribute("users", userService.getUsers());
+            model.addAttribute("isDetail", false);
         }
         return "users";
     }
@@ -46,7 +53,11 @@ public class UserController {
     }
 
     @PostMapping()
-    public String create(@ModelAttribute("user") User user) {
+    public String create(@ModelAttribute("user") @Valid User user,
+                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "newUser";
+        }
         userService.addUser(user);
         return "redirect:/users";
     }
@@ -58,14 +69,17 @@ public class UserController {
         return "editUser";
     }
 
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user
-    ) {
+    @PostMapping("/{id}")
+    public String update(@ModelAttribute("user") @Valid User user,
+                         BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            return "editUser";
+        }
         userService.update(user.getId(), user);
         return "redirect:/users";
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/delete/{id}")
     public String delete(@ModelAttribute("user") User user) {
         userService.deleteUser(user);
         return "redirect:/users";

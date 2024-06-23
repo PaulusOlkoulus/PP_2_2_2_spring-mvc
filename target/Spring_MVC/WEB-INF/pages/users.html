@@ -4,24 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Users</title>
-    <link rel="stylesheet" href="../styles/styles.css" type="text/css">
+    <style>
+
+        table {
+            border-collapse: collapse; /* объединение границ */
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black; /* стиль границы */
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2; /* цвет фона заголовков */
+        }
+
+    </style>
 
 </head>
 <body>
 <div>
-    <!--    <th:block th:each="user : ${users}">-->
-    <!--        <h1 th:text="${msg}"></h1>-->
-    <!--    </th:block>-->
 
-    <table>
+
+    <table th:if="${usersCount>0}">
         <thead>
         <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Surname</th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <td th:if="${isDetail}">Age</td>
+            <td th:if="${isDetail}">Email</td>
+            <!--            <th></th>-->
+            <!--            <th></th>-->
+            <!--            <th></th>-->
         </tr>
         </thead>
 
@@ -31,20 +48,25 @@
             <td th:text="${user.getId()}"></td>
             <td th:text="${user.getName()}"></td>
             <td th:text="${user.getSurName()}"></td>
+            <td th:if="${isDetail}" th:text="${user.getAge()}"></td>
+            <td th:if="${isDetail}" th:text="${user.getEmail()}"></td>
             <td><a th:href="@{users/edit(id=${user.getId()})}">Изменить</a></td>
             <td>
-                <form th:method="DELETE" th:object="${user}" th:action="@{/users/{id}(id=${user.getId()})}">
+                <form th:method="post" th:object="${user}" th:action="@{/users/delete/{id}(id=${user.getId()})}">
                     <input type="submit" value="Удалить">
                 </form>
             </td>
-            <td ><a th:if="${check}" th:href="@{users(id=${user.getId()})}">подробнее</a></td>
+            <td th:if="${check}"><a th:text="подробнее" th:href="@{users(id=${user.getId()})} "></a></td>
         </tr>
         </tbody>
 
     </table>
+    <div th:if="${usersCount==0}" >В БД нет пользователей!</div>
+
     <br>
     <hr>
     <a th:if="${check}" th:href="@{/users/new}">Создать нового пользователя</a>
+    <a th:if="${isDetail}" th:href="@{/users}">К списку пользователей</a>
 </div>
 </body>
 </html>
