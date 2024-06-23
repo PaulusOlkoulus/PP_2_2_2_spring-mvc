@@ -13,29 +13,30 @@ import web.service.UserServiceImpl;
 @Controller
 @RequestMapping("/users")
 public class UserController {
-
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+
     @GetMapping()
-    public String index(@RequestParam(name = "count", required = false) Integer count,
-                        ModelMap model) {
-        if (count != null) {
-            model.addAttribute("users", userService.getUsers(count));
+    public String index(Model model, @RequestParam(name = "id", required = false) Integer id) {
+        if (id != null) {
+            model.addAttribute("users", userService.getUserDetail(id));
+            model.addAttribute("check", false);
         } else {
+            model.addAttribute("check", true);
             model.addAttribute("users", userService.getUsers());
         }
-
         return "users";
     }
 
     @GetMapping("/{id}")
-    public String getUserDetails(@PathVariable("id") int id,
+    public String getUserDetails(@ModelAttribute("user") User user,
                                  Model model) {
-        model.addAttribute("user", userService.getUserDetail(id));
+        model.addAttribute("user", userService.getUserDetail(user.getId()));
         return "user";
     }
 
@@ -50,23 +51,22 @@ public class UserController {
         return "redirect:/users";
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/edit")
     public String editUser(Model model,
-                           @PathVariable("id") int id) {
+                           @RequestParam("id") int id) {
         model.addAttribute("user", userService.getUserDetail(id));
         return "editUser";
     }
 
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("user") User user
-                         ){
-        userService.update(user);
+    ) {
+        userService.update(user.getId(), user);
         return "redirect:/users";
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@ModelAttribute("user") User user)
-    {
+    public String delete(@ModelAttribute("user") User user) {
         userService.deleteUser(user);
         return "redirect:/users";
     }

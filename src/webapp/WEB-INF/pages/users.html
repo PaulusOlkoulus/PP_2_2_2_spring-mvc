@@ -9,9 +9,7 @@
 </head>
 <body>
 <div>
-    <!--    <th:block th:each="user : ${users}">-->
-    <!--        <h1 th:text="${msg}"></h1>-->
-    <!--    </th:block>-->
+
 
     <table>
         <thead>
@@ -31,20 +29,20 @@
             <td th:text="${user.getId()}"></td>
             <td th:text="${user.getName()}"></td>
             <td th:text="${user.getSurName()}"></td>
-            <td><a th:href="@{users/{id}/edit(id=${user.getId()})}">Изменить</a></td>
+            <td><a th:href="@{users/edit(id=${user.getId()})}">Изменить</a></td>
             <td>
                 <form th:method="DELETE" th:object="${user}" th:action="@{/users/{id}(id=${user.getId()})}">
                     <input type="submit" value="Удалить">
                 </form>
             </td>
-            <td><a th:href="@{users/{id}(id=${user.getId()})}">подробнее</a></td>
+            <td ><a th:if="${check}" th:href="@{users(id=${user.getId()})}">подробнее</a></td>
         </tr>
         </tbody>
 
     </table>
     <br>
     <hr>
-    <a th:href="@{/users/new}">Создать нового пользователя</a>
+    <a th:if="${check}" th:href="@{/users/new}">Создать нового пользователя</a>
 </div>
 </body>
 </html>
